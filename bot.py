@@ -30,9 +30,10 @@ def corrigir_valor(valor):
 
 
 def corrigir_linha(linha):
-    id_local, data, cliente, cnpj, produto, preco_unitario, icms, ipi, pis, cofins, valor_total = linha
+    id_local, data, cliente, cnpj, produto, quantidade, preco_unitario, icms, ipi, pis, cofins, valor_total = linha
 
     # Corrigir valores numéricos
+    quantidade = corrigir_valor(quantidade)
     preco_unitario = corrigir_valor(preco_unitario)
     icms = corrigir_valor(icms)
     ipi = corrigir_valor(ipi)
@@ -52,7 +53,7 @@ def corrigir_linha(linha):
     data = data.strftime('%Y-%m-%d %H:%M:%S')
 
     return (id_local, data, cliente.strip(), cnpj.strip(), produto.strip(),
-            preco_unitario, icms, ipi, pis, cofins, valor_total)
+            quantidade, preco_unitario, icms, ipi, pis, cofins, valor_total)
 
 
 # ==== Validação da Linha ====
@@ -65,6 +66,7 @@ def validar_linha(linha):
         float(linha[8])
         float(linha[9])
         float(linha[10])
+        float(linha[11])
         return True
     except:
         return False
@@ -93,9 +95,9 @@ def tratar_e_enviar_dados():
             if validar_linha(linha_corrigida):
                 sql = """
                     INSERT INTO notas (
-                        data, cliente, cnpj, produto, preco_unitario,
+                        data, cliente, cnpj, produto, quantidade, preco_unitario,
                         icms, ipi, pis, cofins, valor_total
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 cursor_mysql.execute(sql, linha_dados)
                 conn_mysql.commit()
